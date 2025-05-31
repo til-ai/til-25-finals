@@ -10,6 +10,12 @@ There are also some slight changes to the `til-25-environment`, and it is recomm
 - The `step` observation component has been modified to have a maximum value of `NUM_ITERS+1` instead of `NUM_ITERS` to reduce the likelihood of off-by-one errors, and is now also manually cast to a `np.uint8`.
 
 ## Setup
+Init and update all submodules (`til-25-environment` within the `test_competition_server` directory).
+
+```Bash
+git submodule update --init
+```
+
 Create a new `.env` file copied from the `.env.example` file. Also create a directory called `artifacts` to store testing artifacts from Docker so you can review them later:
 
 ```Bash
