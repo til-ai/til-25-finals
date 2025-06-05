@@ -6,6 +6,7 @@ services:
       - .env
       - ~/.env
     container_name: til-competition-test
+    restart: unless-stopped
     ports:
       - ${COMPETITION_SERVER_PORT}:${COMPETITION_SERVER_PORT}
     volumes:
@@ -27,27 +28,24 @@ services:
       - .env
       - ~/.env
     container_name: til-finals
+    restart: unless-stopped
     shm_size: 32gb # set upper limit for how much shared memory container can use
     depends_on:
       til-competition-test:
         condition: service_healthy
-        restart: true
       til-asr:
         condition: service_healthy
-        restart: true
       til-cv:
         condition: service_healthy
-        restart: true
       til-ocr:
         condition: service_healthy
-        restart: true
       til-rl:
         condition: service_healthy
-        restart: true
     command: ["python", "participant_server.py"]
   til-asr:
     image: asia-southeast1-docker.pkg.dev/til-ai-2025/${REPO_NAME}/${TEAM_NAME}-asr:finals
     container_name: til-asr
+    restart: unless-stopped
     environment:
       NVIDIA_VISIBLE_DEVICES: 0
       CUDA_VISIBLE_DEVICES: 0
@@ -61,7 +59,6 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-    command: ["uvicorn", "asr_server:app", "--host", "0.0.0.0", "--port", "5001"]
     healthcheck:
       test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5001/health')"]
       interval: 5s
@@ -71,6 +68,7 @@ services:
   til-cv:
     image: asia-southeast1-docker.pkg.dev/til-ai-2025/${REPO_NAME}/${TEAM_NAME}-cv:finals
     container_name: til-cv
+    restart: unless-stopped
     environment:
       NVIDIA_VISIBLE_DEVICES: 0
       CUDA_VISIBLE_DEVICES: 0
@@ -84,7 +82,6 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-    command: ["uvicorn", "cv_server:app", "--host", "0.0.0.0", "--port", "5002"]
     healthcheck:
       test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5002/health')"]
       interval: 5s
@@ -94,6 +91,7 @@ services:
   til-ocr:
     image: asia-southeast1-docker.pkg.dev/til-ai-2025/${REPO_NAME}/${TEAM_NAME}-ocr:finals
     container_name: til-ocr
+    restart: unless-stopped
     environment:
       NVIDIA_VISIBLE_DEVICES: 0
       CUDA_VISIBLE_DEVICES: 0
@@ -107,7 +105,6 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-    command: ["uvicorn", "ocr_server:app", "--host", "0.0.0.0", "--port", "5003"]
     healthcheck:
       test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5003/health')"]
       interval: 5s
@@ -117,6 +114,7 @@ services:
   til-rl:
     image: asia-southeast1-docker.pkg.dev/til-ai-2025/${REPO_NAME}/${TEAM_NAME}-rl:finals
     container_name: til-rl
+    restart: unless-stopped
     environment:
       NVIDIA_VISIBLE_DEVICES: 0
       CUDA_VISIBLE_DEVICES: 0
@@ -130,7 +128,6 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-    command: ["uvicorn", "rl_server:app", "--host", "0.0.0.0", "--port", "5004"]
     healthcheck:
       test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5004/health')"]
       interval: 5s
