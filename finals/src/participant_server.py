@@ -28,6 +28,10 @@ async def task_handler(data: dict) -> None:
             # add step number to return value to make sure the RL action corresponds to the step
             action = await manager.run_rl(data["observation"])
             return {"step": data["observation"]["step"], "action": action}
+        case "surprise":
+            return await manager.run_surprise(data["slices"])
+        case _:
+            raise ValueError(f"Unknown task type {repr(data['task'])}")
 
 
 async def handle_task_and_send_result(websocket, data: dict):
@@ -113,7 +117,7 @@ async def server():
 async def shutdown(running_tasks: set[asyncio.Task], manager: ModelsManager):
     for task in running_tasks:
         task.cancel()
-    return await manager.exit()
+    # return await manager.exit()
 
 
 if __name__ == "__main__":

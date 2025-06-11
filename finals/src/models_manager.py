@@ -54,3 +54,11 @@ class ModelsManager:
             json={"instances": [{"observation": observation}]},
         )
         return results.json()["predictions"][0]["action"]
+
+    async def run_surprise(self, slices: list[str]) -> list[int]:
+        print("Running surprise")
+        results = await self.async_post(
+            f"http://{self.local_ip}:5005/surprise",
+            json={"instances": [{"slices": slices}]},
+        )
+        return results.json()["predictions"][0]
